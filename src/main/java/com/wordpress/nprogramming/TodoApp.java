@@ -5,10 +5,6 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.net.UnknownHostException;
 
 public class TodoApp {
@@ -58,14 +54,10 @@ class TodoEngine {
             todoItems.insert(new BasicDBObject("value", value));
         } else if (commandLine.hasOption("list")) {
             log.info("Listing items");
-            DBCursor cursor = todoItems.find();
 
-            try {
-                while (cursor.hasNext()) {
+            try (DBCursor cursor = todoItems.find()) {
+                while (cursor.hasNext())
                     System.out.println(cursor.next().get("value"));
-                }
-            } finally {
-                cursor.close();
             }
         } else if (commandLine.hasOption("delete")) {
             String value = commandLine.getOptionValue("delete");
